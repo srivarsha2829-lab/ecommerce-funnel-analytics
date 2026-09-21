@@ -28,7 +28,7 @@ def timed_events():
 
 def test_sessionization_and_ordered_journey():
     sessionized = add_sessions(timed_events(), inactivity_minutes=30)
-    assert sessionized["session_id"].nunique() == 3
+    assert sessionized.groupby(["visitorid", "session_number"]).ngroups == 3
     journeys = session_journeys(sessionized)
     assert journeys["view_cart_transaction"].sum() == 1
 
