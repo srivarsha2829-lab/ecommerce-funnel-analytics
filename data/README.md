@@ -1,32 +1,32 @@
 # Data
 
-This project uses the **Retailrocket recommender system dataset**, a public, anonymized behavioral dataset collected from a real e-commerce website.
+This project uses the public, anonymized **Retailrocket E-Commerce Dataset**.
 
 Dataset page: https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset
 
-## Why this dataset
+## Files used
 
-The event log maps naturally to a product funnel:
+The completed analysis uses all four source files:
 
-- `view` — a visitor views an item
-- `addtocart` — a visitor adds an item to the cart
-- `transaction` — a visitor completes a purchase
+- `events.csv` — visitor views, cart additions, and transactions
+- `item_properties_part1.csv`
+- `item_properties_part2.csv` — time-varying item metadata, including category assignments
+- `category_tree.csv` — anonymized category hierarchy
 
-That makes it useful for studying customer journeys, funnel conversion, drop-off, product engagement, repeat behavior, and time-based trends.
+## Local setup
 
-## Dataset scale
+Create `data/raw/` and place the four extracted CSV files there:
 
-The published dataset contains roughly 2.76 million behavioral events from about 1.4 million visitors over approximately 4.5 months.
+```text
+data/raw/events.csv
+data/raw/item_properties_part1.csv
+data/raw/item_properties_part2.csv
+data/raw/category_tree.csv
+```
 
-The main files are:
+Raw data is intentionally ignored by Git because of its size.
 
-- `events.csv` — visitor behavioral events
-- `item_properties_part1.csv` and `item_properties_part2.csv` — item properties over time
-- `category_tree.csv` — category hierarchy
-
-For the first phase of this project, the analysis uses **events.csv**. Product/category enrichment can be added later.
-
-## events.csv fields
+## Event fields
 
 | Field | Meaning |
 | --- | --- |
@@ -34,22 +34,14 @@ For the first phase of this project, the analysis uses **events.csv**. Product/c
 | `visitorid` | anonymized visitor identifier |
 | `event` | `view`, `addtocart`, or `transaction` |
 | `itemid` | anonymized product identifier |
-| `transactionid` | transaction identifier; populated for purchase events |
+| `transactionid` | populated for transaction events |
 
-## Download
+## How metadata is used
 
-1. Open the dataset page linked above.
-2. Download and extract the dataset.
-3. Place `events.csv` at:
+Item properties change over time. For the category-level screening in this project, the latest observed `categoryid` assignment for each item is used. The category tree is then used to trace category IDs to their top-level anonymized branch.
 
-```
-data/raw/events.csv
-```
+Because product and category labels are anonymized, the analysis does not infer real merchandise names or customer demographics.
 
-Raw data is ignored by Git and should remain local.
+## Scope and interpretation
 
-## Notes
-
-The source values are anonymized/hashed. This project therefore focuses on behavioral patterns rather than customer demographics or identifiable product names.
-
-The source dataset was originally published for recommender-system research; here it is being explored from a product-analytics perspective.
+The dataset contains roughly 2.76 million behavioral events from about 1.4 million visitors over approximately 4.5 months. Sessions are not supplied by the source and are inferred in this project using a 30-minute inactivity threshold. Event-count ratios and recurrence measures are descriptive analytical signals rather than causal effects.
