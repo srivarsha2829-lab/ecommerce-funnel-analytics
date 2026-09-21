@@ -1,5 +1,6 @@
 import pandas as pd
 
+from src.category_analysis import category_root_map, root_category_performance
 from src.cohort_analysis import weekly_cohorts
 from src.data_quality import data_quality_report
 from src.session_analysis import add_sessions, session_journeys
@@ -68,3 +69,19 @@ def test_data_quality_report():
     assert report["rows"] == 2
     assert report["exact_duplicates"] == 1
     assert report["unexpected_events"] == []
+
+
+def test_category_hierarchy_and_root_performance():
+    tree = pd.DataFrame(
+        {"categoryid": [1, 2, 3], "parentid": [None, 1, 2]}
+    )
+    assert category_root_map(tree)[3] == 1
+
+    events = timed_events()
+    item_categories = pd.DataFrame(
+        {"itemid": [10, 20], "categoryid": [3, 2]}
+    )
+    result = root_category_performance(events, item_categories, tree)
+    assert len(result) == 1
+    assert result.loc[0, "root_categoryid"] == 1
+    assert result.loc[0, "transactions"] == 1
