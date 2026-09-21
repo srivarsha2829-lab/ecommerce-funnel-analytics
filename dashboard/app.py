@@ -87,7 +87,11 @@ tab1, tab2, tab3, tab4 = st.tabs(
 
 with tab1:
     st.subheader("Observed visitor-stage funnel")
-    st.bar_chart(funnel.set_index("stage")["visitors"])
+    funnel_chart = (
+        funnel.set_index("stage")
+        .reindex(["view", "addtocart", "transaction"])[["visitors"]]
+    )
+    st.bar_chart(funnel_chart, x_label="Funnel stage", y_label="Visitors")
     st.dataframe(
         funnel.style.format(
             {
